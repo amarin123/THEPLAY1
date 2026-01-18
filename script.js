@@ -169,7 +169,7 @@ const data = {
 
     unread: {
       texts: [
-        "ノートパソコンが起動している。",
+        "ノートパソコンだ。",
         "何かのロックがかかっているようだ。"
       ],
       unlockRead: false,
@@ -948,4 +948,5 @@ function resetGameState() {
 
   // フラグ初期化（全部 or 必要な分だけ）
   Object.keys(flags).forEach(k => flags[k] = false);
+
 }
