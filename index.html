@@ -15,66 +15,52 @@
       RESTART
     </button>
 
-    <!-- 後で使う -->
-    <!-- <button class="title-btn" id="continue-btn">CONTINUE</button> -->
   </div>
 </div>
 
 <div id="room">
-  <!-- 書斎画像 -->
   <img src="room.png" id="room-image" />
 
-  <!-- クリックエリア（日記） -->
   <div class="hotspot"
        style="top: 66%; left: 41.5%; width: 2.5%; height: 3.5%;"
        onclick="openPopup('diary')"></div>
 
-  <!-- クリックエリア（ゴミ箱） -->
   <div class="hotspot"
        style="top: 80%; left: 35%; width: 7%; height: 12%;"
        onclick="openPopup('can')"></div>
 
-  <!-- クリックエリア（金庫） -->
   <div class="hotspot"
        style="top: 85%; left: 17%; width: 10%; height: 12%;"
        onclick="openPopup('safe')"></div>
 
-  <!-- クリックエリア（パソコン） -->
   <div class="hotspot"
        style="top: 60%; left: 46.5%; width: 6.5%; height: 8%;"
        onclick="openPopup('laptop')"></div>
 
-  <!-- クリックエリア（引き出し） -->
   <div class="hotspot"
        style="top: 71%; left: 57%; width: 10%; height: 22%;"
        onclick="openPopup('drawer')"></div>
 </div>
 
-<!-- ポップアップ -->
 <div id="popup">
   <div id="popup-content">
 
-    <!-- 上：画像エリア -->
     <div id="popup-image-area">
       <img id="popup-image" />
 
-      <!-- ★ Lights Out（PC画面に重ねる） -->
       <div id="lightsout" class="hidden">
         <div id="grid"></div>
         <p id="puzzle-message"></p>
       </div>
 
-      <!-- ★ To be continued（最前面） -->
       <div id="tbc" class="hidden"></div>
     </div>
 
-    <!-- 金庫用の入力UI -->
     <div id="keypad" class="hidden">
       <input type="password" id="codeInput" placeholder="暗証番号" />
       <button id="codeSubmit">決定</button>
     </div>
 
-    <!-- 下：メッセージエリア -->
     <div id="popup-message-area">
       <div id="popup-message-inner">
         <p id="popup-text"></p>
@@ -88,3 +74,4 @@
 <script src="script.js"></script>
 </body>
 </html>
+
