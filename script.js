@@ -16,24 +16,22 @@ const startBtn = document.getElementById("start-btn");
 
 startBtn.addEventListener("click", () => {
   const title = document.getElementById("title-screen");
-  // フェードアウト
+
   titleScreen.style.transition = "opacity 1.5s";
   titleScreen.style.opacity = 0;
 
   setTimeout(() => {
     titleScreen.style.display = "none";
 
-    resetGameUI();   // ★ 追加
-    resetGameState(); // ★ 追加
+    resetGameUI();
+    resetGameState();
 
-    // ★★★ これを必ず追加 ★★★
     const room = document.getElementById("room");
     room.classList.remove("hidden");
     room.classList.remove("fadeout");
     room.style.opacity = "1";
     room.style.display = "block";
 
-    // ★ ゲーム開始BGM
     playBGM("bgm_room.mp3");
   }, 1500);
 });
@@ -43,13 +41,12 @@ const seCache = {};
 function playSE(src) {
   if (!src) return;
 
-  // キャッシュ（同じ音を毎回 new Audio しない）
   if (!seCache[src]) {
     seCache[src] = new Audio(src);
   }
 
   const se = seCache[src];
-  se.currentTime = 0; // 連続再生対策
+  se.currentTime = 0;
   se.play();
 }
 
@@ -60,17 +57,14 @@ function stopBGM() {
 }
 
 function resolveRoute(entry) {
-  // ① read 済み
   if (flags[entry.flag]) {
     return entry.read;
   }
 
-  // ② condition
   if (entry.conditionRoute && entry.conditionRoute.condition()) {
     return entry.conditionRoute;
   }
 
-  // ③ unread
   return entry.unread;
 }
 
@@ -113,15 +107,13 @@ const data = {
 
   can: {
     flag: "can",
-    image: "can.png",                 // unread 用
-    readImage: "memo.png",   // ★ 追加（read 用）
+    image: "can.png",
+    readImage: "memo.png",
 
-    // 🔹 diary 未読時
     unread:{
       texts: ["ごみ箱は紙で埋まっている。"],
     },
 
-    // 🔹 diary 読了後の condition ルート
     conditionRoute: {
       condition: () => flags.diary,
 
@@ -135,25 +127,22 @@ const data = {
         "後のことは任せよう。"
       ],
 
-      // ★ 画像
       imageOnTextIndex: 2,
       imageAfterChange: "memo.png",
 
-      // ★ SE
       seOnTexts: [
         { index: 1, se: "se_can.mp3" },
         { index: 2, se: "se_memo.mp3" }
       ],
 
-      unlockRead: true, // ★ unlockはここだけ！
+      unlockRead: true,
 
       onFinish: () => {
         playBGM("bgm_room.mp3");
-        flags.canConditionCleared = true; // ★ readImage 用
+        flags.canConditionCleared = true;
       }
     },
 
-    // 🔹 condition 読了後
     read:{
       texts: [
         "ごみ箱に日記の破られたページが捨てられていた。",
@@ -183,7 +172,6 @@ const data = {
       }
     },
 
-    // ② lightsout クリア後に再度触ったとき
     conditionRoute: {
       condition: () => flags.puzzleCleared,
 
@@ -194,7 +182,6 @@ const data = {
       unlockRead: true
     },
 
-    // ③ それ以降
     read: {
       texts: [
         "画面には『2434』と表示されている。"
@@ -205,7 +192,7 @@ const data = {
   safe: {
     flag: "safe",
     image: "safe.png",
-    readImage: "zasshi.png",   // ★ 追加（read 用）
+    readImage: "zasshi.png",
 
     unread: {
       texts: [
@@ -233,7 +220,6 @@ const data = {
       }
     },
 
-    // ★ 暗証番号
     code: "2434",
 
     seSuccess: "se_safe_open.mp3",
@@ -251,7 +237,6 @@ const data = {
       ]
     },
 
-    // ★ 鍵を持っている場合の特別ルート
     conditionRoute: {
       condition: () => flags.hasKey,
       texts: [
@@ -261,10 +246,8 @@ const data = {
         "開いた"
       ],
 
-      // ★ 画像
       imageOnTextIndex: 2,
       imageAfterChange: "door_open.png",
-      // ★ SE
       seOnTexts: [
         { index: 2, se: "se_door_open.mp3" }
       ],
@@ -323,12 +306,9 @@ const popupText = document.getElementById("popup-text");
 let typingTimer = null;
 let typingIndex = 0;
 
-/* タイプライター表示 */
 function typeText(text) {
-  // ★ diary用の文字色制御
   popupText.classList.remove("diary-highlight");
 
-  /* ===== diary unread：3〜12文目 ===== */
   if (
     currentKey === "diary" &&
     activeRoute === data.diary.unread &&
@@ -338,7 +318,6 @@ function typeText(text) {
     popupText.classList.add("diary-highlight");
   }
 
-  /* ===== can conditionRoute：4〜7文目 ===== */
   if (
     currentKey === "can" &&
     activeRoute === data.can.conditionRoute &&
@@ -348,8 +327,6 @@ function typeText(text) {
     popupText.classList.add("diary-highlight");
   }
 
-  // --- 以下は既存のタイプライター処理 ---
-  // 途中表示をリセット
   if (typingTimer) {
     clearTimeout(typingTimer);
     typingTimer = null;
@@ -362,9 +339,8 @@ function typeText(text) {
     if (typingIndex < text.length) {
       popupText.textContent += text.charAt(typingIndex);
       typingIndex++;
-      typingTimer = setTimeout(type, 40); // ←速度（小さいほど速い）
+      typingTimer = setTimeout(type, 40);
     } else {
-      // ★ ここが「1文の表示完了」
       onTextFinished();
     }
   }
@@ -373,18 +349,14 @@ function typeText(text) {
 }
 
 function onTextFinished() {
-  // 最後の文まで来た？
   if (currentTextIndex === activeTexts.length - 1) {
     hasFinishedReading = true;
 
-    // ★★★ safe暗証番号成功 → 即エンディング ★★★
     if (safeEndingQueued) {
       safeEndingQueued = false;
 
-      // ★ エンディング直前BGMに切り替え
       playBGM("bgm_test.mp3", 0.4);
 
-      // ★ 少し余韻を置いてから演出開始（超おすすめ）
       setTimeout(() => {
         startTruthTransition();
       }, 1200);
@@ -392,7 +364,6 @@ function onTextFinished() {
       return;
     }
 
-    // ★ condition ルートを最後まで読んだときだけ
     if (activeRoute === data[currentKey]) {
     }
   }
@@ -407,28 +378,22 @@ function openPopup(key) {
 
   const entry = data[key];
 
-  // ★ ルート確定（最優先）
   activeRoute = resolveRoute(entry);
 
-  // 表示する文章群
   activeTexts = activeRoute.texts || [];
 
-  // ★ 表示画像（read / unread / condition 後を含めて1回だけ）
   if (flags[key] && entry.readImage) {
     popupImage.src = entry.readImage;
   } else {
     popupImage.src = entry.image;
   }
 
-  // ★ read フラグを立ててよいか
   canMarkAsRead = !!activeRoute.unlockRead;
 
-  // ★ SE 再生
   if (activeRoute.se) {
     playSE(activeRoute.se);
   }
 
-  // ★ 金庫だけ入力UIを出す
   if (key === "safe" && !flags.safe) {
     keypad.classList.remove("hidden");
   } else {
@@ -444,39 +409,32 @@ function openPopup(key) {
 };
 
 function closePopup() {
-  // ★ lightsout 中は絶対に閉じない
   if (isLightsOutActive) return;
 
-  keypad.classList.add("hidden"); // ← 保険
+  keypad.classList.add("hidden");
 
-  // ★ エンディング中なら通常処理をしない
   if (isEndingPhase === 1) {
     showTbcPhase();
     return;
   }
 
-  // 1. 先に読了時の処理（フラグ更新など）を実行してしまう
   if (hasFinishedReading && activeRoute?.onFinish) {
     activeRoute.onFinish();
   }
 
-  // 通常 unread → read
   if (hasFinishedReading && canMarkAsRead) {
     flags[currentKey] = true;
   }
 
-  // 2. ★★★ 修正箇所：パズル開始条件を満たす場合は、ポップアップを閉じずにパズルを開始して終了 ★★★
   if (
     currentKey === "laptop" &&
     flags.laptopRead &&
     !flags.puzzleCleared
   ) {
-    // ポップアップを閉じずに、そのままパズル画面へ切り替え
     openLightsOut(); 
-    return; // ← ここで関数を抜けることで、下の remove("show") が実行されなくなります
+    return;
   }
 
-  // 3. 通常の閉じる処理（パズルに行かない場合のみここに来る）
   popup.classList.remove("show");
 
   currentKey = null;
@@ -502,7 +460,6 @@ messageArea.addEventListener("click", (event) => {
 
   currentTextIndex++;
 
-  // ★ 文インデックスごとの SE 再生（複数対応）
   if (activeRoute && Array.isArray(activeRoute.seOnTexts)) {
     const hit = activeRoute.seOnTexts.find(
       s => s.index === currentTextIndex
@@ -512,18 +469,15 @@ messageArea.addEventListener("click", (event) => {
     }
   }
 
-  // ★ 文インデックスで画像切り替え
   if (
     activeRoute &&
     activeRoute.imageOnTextIndex === currentTextIndex
   ) {
-    // フェードアウト開始
     popupImage.classList.add("fade");
 
     setTimeout(() => {
       popupImage.src = activeRoute.imageAfterChange;
 
-      // フェードイン
       popupImage.classList.remove("fade");
     }, 0);
   }
@@ -535,7 +489,7 @@ const closeBtn = document.getElementById("close-btn");
 
 closeBtn.addEventListener("click", (event) => {
   if (isLightsOutActive) {
-  event.stopPropagation(); // ← これが超重要
+  event.stopPropagation();
     return;
   }
   closePopup();
@@ -554,8 +508,7 @@ codeSubmit.addEventListener("click", () => {
   const input = codeInput.value;
 
   if (input === entry.code) {
-    // 成功
-    flags.safeUnlocked = true;   // ★ ここだけ
+    flags.safeUnlocked = true;
     flags.safe = true;
     playSE(entry.seSuccess);
 
@@ -568,12 +521,11 @@ codeSubmit.addEventListener("click", () => {
       "「大晦日集団失踪事件」？",
     ];
     currentTextIndex = 0;
-    safeEndingQueued = true; // ★ ここ重要
+    safeEndingQueued = true;
     typeText(activeTexts[0]);
 
     keypad.classList.add("hidden");
   } else {
-    // 失敗
     playSE(entry.seFail);
     activeTexts = ["違うようだ。"];
     currentTextIndex = 0;
@@ -608,11 +560,10 @@ function openLightsOut() {
   isLightsOutActive = true;
 
   popupImage.src = "laptop_off_bg.png";
-  popupImage.classList.remove("hidden-image"); // ← ここ重要
+  popupImage.classList.remove("hidden-image");
 
   document.getElementById("lightsout").classList.remove("hidden");
 
-  // ★ メッセージだけ消す
   document.getElementById("popup-message-area").classList.add("hidden");
 
   initPuzzle();
@@ -624,7 +575,7 @@ function initPuzzle() {
   gridState = [];
 
   for (let i = 0; i < size * size; i++) {
-    const isOn = fixedPattern[i]; // ★ ここ
+    const isOn = fixedPattern[i];
     gridState.push(isOn);
 
     const cell = document.createElement("div");
@@ -668,21 +619,16 @@ function checkClear() {
 
 function puzzleClear() {
   flags.puzzleCleared = true;
-  isLightsOutActive = false; // ★ ここ
+  isLightsOutActive = false;
 
-  // ★ クリアSE
   playSE("se_lightsout_clear.mp3");
 
-  // ミニゲーム UI を消す
   document.getElementById("lightsout").classList.add("hidden");
 
-  // ★ ここで画像を差し替える
   popupImage.src = "laptop_off_2434.png";
 
-  // ★ パソコン画像を戻す
   popupImage.classList.remove("hidden-image");
 
-  // メッセージエリアを戻す
   document.getElementById("popup-message-area").classList.remove("hidden");
 
   activeTexts = [
@@ -695,33 +641,27 @@ function puzzleClear() {
 }
 
 function startTruthTransition() {
-  isEndingPhase = 1; // ★ ここで世界を切り替える
+  isEndingPhase = 1;
 
   const popupText = document.getElementById("popup-text");
-  popupText.classList.add("ending-text"); // ★ 追加
+  popupText.classList.add("ending-text");
 
   const room = document.getElementById("room");
   const messageArea = document.getElementById("popup-message-area");
 
-  // ★【追加①】フェード前の初期化（超重要）
   room.classList.remove("hidden");
   room.classList.remove("fadeout");
   room.style.opacity = "";
 
-  // ★【追加②】1フレーム待ってからフェード開始
   requestAnimationFrame(() => {
     fadeOutRoom(() => {
-      // 部屋を消す
       room.classList.add("hidden");
 
-      // popup を再表示
       popup.classList.add("show");
 
-      // ★ 通常メッセージウィンドウに戻す
       messageArea.classList.remove("hidden");
       messageArea.classList.remove("ending");
 
-      // popup差し替え
       popupImage.src = "zasshi.png";
       activeTexts = [
         "大晦日、静かな村で起こった「集団失踪事件」。",
@@ -745,36 +685,31 @@ function fadeOutRoom(cb) {
 function showTbcPhase() {
   isEndingPhase = 2;
 
-  stopBGM(); // ★ BGM停止
+  stopBGM();
 
-  // メッセージUIを消す
   const messageArea = document.getElementById("popup-message-area");
   messageArea.classList.add("hidden");
 
-  // popup-image-area は残す（←重要）
-  popupImage.src = ""; // 雑誌画像などは不要なら消す
+  popupImage.src = "";
 
   const tbc = document.getElementById("tbc");
   tbc.classList.remove("hidden");
 
-  // ★ 少し待ってから表示
   setTimeout(() => {
     tbc.classList.remove("hidden");
 
-    // フェードインを確実に効かせる
     requestAnimationFrame(() => {
       tbc.classList.add("show");
     });
-  }, 1500); // ← ここが遅延時間（ms）
+  }, 1500);
 
-  // ★ タイプライター開始（さらに遅らせる）
   setTimeout(() => {
     typeTBC("To be continued...");
   }, 2500);
 
   setTimeout(() => {
     returnToTitle();
-  }, 10000); // 好きな余韻時間
+  }, 10000);
 }
 
 let tbcTimer = null;
@@ -825,11 +760,10 @@ let currentBgmName = null;
 let fadeTimer = null;
 
 function playBGM(src, targetVolume = 0.5) {
-  if (currentBgmName === src) return; // 同じBGMなら何もしない
+  if (currentBgmName === src) return;
 
   if (fadeTimer) clearInterval(fadeTimer);
 
-  // フェードアウト
   fadeTimer = setInterval(() => {
     if (bgm.volume > 0.02) {
       bgm.volume -= 0.02;
@@ -843,7 +777,6 @@ function playBGM(src, targetVolume = 0.5) {
 
       currentBgmName = src;
 
-      // フェードイン
       fadeTimer = setInterval(() => {
         if (bgm.volume < targetVolume) {
           bgm.volume = Math.min(bgm.volume + 0.02, targetVolume);
@@ -859,28 +792,22 @@ function returnToTitle() {
   const popupText = document.getElementById("popup-text");
   popupText.classList.remove("ending-text");
 
-  // BGM 停止
   stopBGM();
 
-  // ポップアップを消す
   popup.classList.remove("show");
 
-  // TBCを消す
   const tbc = document.getElementById("tbc");
   tbc.classList.add("hidden");
   tbc.classList.remove("show");
   tbc.textContent = "";
 
-  // room を戻す（次回プレイ用）
   const room = document.getElementById("room");
   room.classList.remove("hidden");
   room.classList.remove("fadeout");
   room.style.opacity = "1";
 
-  // フラグ初期化（最低限）
   Object.keys(flags).forEach(k => flags[k] = false);
 
-  // タイトル表示
   const title = document.getElementById("title-screen");
   title.style.display = "flex";
   title.style.opacity = 0;
@@ -892,43 +819,34 @@ function returnToTitle() {
 }
 
 function resetGameUI() {
-  // popup を完全初期化
   popup.classList.remove("show");
-  popup.classList.add("hidden"); // ★ これ重要
+  popup.classList.add("hidden");
 
-  // メッセージウィンドウを必ず戻す
   const messageArea = document.getElementById("popup-message-area");
   messageArea.classList.remove("hidden");
   messageArea.classList.remove("ending");
 
-  // TBC を消す
   const tbc = document.getElementById("tbc");
   tbc.classList.add("hidden");
   tbc.classList.remove("show");
   tbc.textContent = "";
 
-  // lightsout 完全停止
   document.getElementById("lightsout").classList.add("hidden");
 
-  // keypad を隠す
   keypad.classList.add("hidden");
 
-  // popup画像リセット（任意）
   popupImage.src = "";
-  popupImage.classList.remove("hidden-image"); // ★ 忘れ防止
+  popupImage.classList.remove("hidden-image");
 
-  // テキスト初期化
   popupText.textContent = "";
 
-  // ★ room を必ず表示状態に戻す
   const room = document.getElementById("room");
   room.classList.remove("hidden");
-  room.classList.remove("fadeout"); // ★ これが致命的に抜けていた
+  room.classList.remove("fadeout");
 
   room.style.opacity = "1";
   room.style.display = "";
 
-  // 念のため画像も
   const roomImg = document.getElementById("room-image");
   if (roomImg) {
     roomImg.src = "room.png";
@@ -946,6 +864,6 @@ function resetGameState() {
 
   isEndingPhase = 0;
 
-  // フラグ初期化（全部 or 必要な分だけ）
   Object.keys(flags).forEach(k => flags[k] = false);
+
 }
