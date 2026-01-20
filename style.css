@@ -4,8 +4,8 @@ body {
   font-family: sans-serif;
 
   display: flex;
-  justify-content: center; /* 横中央 */
-  align-items: center;     /* 縦中央 */
+  justify-content: center;
+  align-items: center;
   height: 100vh;
 }
 
@@ -46,7 +46,6 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* 書斎表示 */
 #room {
   position: relative;
   width: 100vw;
@@ -66,13 +65,11 @@ body {
   opacity: 0;
 }
 
-/* 透明クリックエリア */
 .hotspot {
   position: absolute;
   cursor: pointer;
 }
 
-/* ポップアップ */
 #popup {
   position: fixed;
   top: 0;
@@ -95,14 +92,14 @@ body {
 }
 
 #popup-content {
-  background: transparent; /* ← 黒を消す */
+  background: transparent;
   color: #fff;
   width: 80vw;
   max-width: 700px;
   max-height: 80vh;
 
   display: flex;
-  flex-direction: column; /* ★縦並び */
+  flex-direction: column;
 }
 
 #popup-image-area {
@@ -127,7 +124,7 @@ body {
 #popup-message-area {
   position: relative;
   padding: 10px 15px;
-  background-image: url("message_bg.png"); /* ←あなたの画像名 */
+  background-image: url("message_bg.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -135,7 +132,6 @@ body {
   min-height: 180px;
 }
 
-/* エンディング専用 */
 #popup-message-area.ending {
   position: relative;
   padding: 10px 15px;
@@ -149,7 +145,7 @@ body {
 
 #popup-message-inner {
   position: absolute;
-  top: 70px;   /* ←ここで下にずらす（超重要） */
+  top: 70px;
   left: 40px;
   right: 40px;
 }
@@ -161,7 +157,6 @@ body {
   font-family: "serif";
 }
 
-/* ★ エンディング中のテキスト */
 #popup-text.ending-text {
   color: #bce2e8;
   text-shadow: 0 0 6px rgba(168, 255, 96, 0.6);
@@ -177,7 +172,6 @@ body {
   cursor: pointer;
 }
 
-/* popup 全体フェード用 */
 #popup.fadeout {
   opacity: 0;
   transition: opacity 1.5s ease;
@@ -186,14 +180,13 @@ body {
 
 #lightsout {
   position: absolute;
-  width: 320px;   /* PC画面サイズに合わせる */
+  width: 320px;
   height: 320px;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  /* ★ PC画面の位置調整 */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -224,12 +217,12 @@ body {
 }
 
 #keypad {
-  margin: 10px auto 0 auto; /* ← 左右 auto が重要 */
+  margin: 10px auto 0 auto;
   text-align: center;
   padding: 14px 16px;
 
-  background: rgba(0, 0, 0, 0.6);   /* 半透明背景 */
-  border: 2px solid rgba(255, 255, 255, 0.4); /* 縁取り */
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 8px;
 
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
@@ -275,7 +268,7 @@ body {
   letter-spacing: 2px;
   color: white;
 
-  background: black; /* ← 黒背景にする */
+  background: black;
   opacity: 0;
   transition: opacity 2s ease;
 
@@ -284,7 +277,7 @@ body {
 
 #tbc.show {
   opacity: 1;
-  pointer-events: auto; /* 表示時だけ操作可能 */
+  pointer-events: auto;
 }
 
 .diary-highlight {
@@ -300,3 +293,4 @@ body {
 .hidden {
   display: none !important;
 }
+
